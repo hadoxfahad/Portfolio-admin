@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fahad | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Base Styles - Consistent with your portfolio theme */
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: #0a0f1b;
+            color: #e0e7ff; /* Lighter blue-white for text */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        input, textarea {
+            background-color: #1a202c; /* Darker input background */
+            border: 1px solid #4a5568; /* Grayish border */
+            color: #e2e8f0; /* Light text color */
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #00bcd4; /* Cyan-like button */
+            color: #0a0f1b;
+            font-weight: bold;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 188, 212, 0.5);
+        }
+        button:hover {
+            background-color: #00e5ff; /* Lighter cyan on hover */
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.7);
+            transform: translateY(-2px);
+        }
+        .section-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 800px;
+        }
+        h1, h2, h3, h4 {
+            color: cyan;
+            text-shadow: 0 0 10px cyan;
+        }
+        .error-message {
+            color: #ef4444; /* Red for errors */
+            margin-top: 10px;
+        }
+        .success-message {
+            color: #22c55e; /* Green for success */
+            margin-top: 10px;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid cyan;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .list-item {
+            background-color: #1a202c;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .list-item-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .list-item-controls button {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            box-shadow: none;
+            border-radius: 0.3rem;
+        }
+        .list-item-controls .delete-btn {
+            background-color: #ef4444;
+        }
+        .list-item-controls .delete-btn:hover {
+            background-color: #dc2626;
+        }
+        .list-item-controls .save-btn {
+            background-color: #22c55e;
+        }
+        .list-item-controls .save-btn:hover {
+            background-color: #16a34a;
+        }
+
+        .add-item-button {
+            background-color: #22c55e;
+            margin-top: 1rem;
+        }
+        .add-item-button:hover {
+            background-color: #16a34a;
+        }
+        .grid-col-2 {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .grid-col-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Admin Nav Buttons */
+        .admin-nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .admin-nav-buttons button {
+            background-color: rgba(0, 188, 212, 0.2);
+            border: 1px solid cyan;
+            color: cyan;
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.3);
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+        }
+        .admin-nav-buttons button.active {
+            background-color: cyan;
+            color: #0a0f1b;
+            box-shadow: 0 0 20px cyan;
+        }
+        /* New styles for Live User Count */
+        #userCountDisplay {
+            font-size: 1.2rem;
+            color: #22c55e;
+            text-shadow: 0 0 5px #22c55e;
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 0.5rem;
+            border: 1px solid #22c55e;
+        }
+        #totalViewsDisplay { /* New style for Total Views */
+            font-size: 1.2rem;
+            color: #f59e0b; /* Yellow/Orange */
+            text-shadow: 0 0 5px #f59e0b;
+            text-align: center;
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 0.5rem;
+            border: 1px solid #f59e0b;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-900 text-blue-100">
+
+    <div id="authSection" class="section-card text-center p-8">
+        <h2 class="text-3xl font-bold mb-6 text-cyan-400">Admin Login</h2>
+        <input type="email" id="emailInput" placeholder="Email" class="mb-4 p-3 rounded-lg w-full bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+        <input type="password" id="passwordInput" placeholder="Password" class="mb-4 p-3 rounded-lg w-full bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+        <button id="loginBtn" class="w-full py-3 bg-cyan-600 text-white rounded-lg font-bold hover:bg-cyan-700 transition duration-300">Login</button>
+        <p id="authError" class="text-red-500 mt-4"></p>
+    </div>
+
+    <div id="adminPanel" class="section-card p-8 hidden">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold text-cyan-400">Admin Panel</h2>
+            <button id="logoutBtn" class="bg-red-600 hover:bg-red-700 py-2 px-4 text-sm">Logout</button>
+        </div>
+        <p class="mb-4 text-gray-400">Edit your portfolio content below.</p>
+
+        <!-- Admin Navigation -->
+        <div class="admin-nav-buttons" id="adminNavButtons">
+            <button id="navHomeContentBtn" class="active">Home Content</button>
+            <button id="navVideoWorkBtn">Video Work</button>
+            <button id="navThumbnailDesignsBtn">Thumbnail Designs</button>
+        </div>
+
+        <!-- Live User Count Display -->
+        <div id="userCountDisplay">Live Users: 0</div>
+        <div id="totalViewsDisplay">Total Visits: 0</div>
+
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="flex justify-center items-center h-24 hidden">
+            <div class="loading-spinner"></div>
+            <p class="ml-4 text-lg text-cyan-300">Loading data...</p>
+        </div>
+        <p id="dataMessage" class="text-red-500 text-center hidden mb-4">Error loading data.</p>
+
+        <!-- Home Content Section -->
+        <div id="homeContentSection">
+            <!-- Profile Picture Section -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-blue-300">Profile Picture & Name</h3>
+                <label for="profilePicUrlInput" class="block text-gray-300 text-sm font-bold mb-2">Profile Picture URL:</label>
+                <input type="text" id="profilePicUrlInput" placeholder="images/profile.jpg" class="mb-4">
+                <label for="fahadNameInput" class="block text-gray-300 text-sm font-bold mb-2">Your Name (Main Heading):</label>
+                <input type="text" id="fahadNameInput" placeholder="FAHAD" class="mb-4">
+                <label for="fahadMalikNameInput" class="block text-gray-300 text-sm font-bold mb-2">Your Full Name (Contact Card):</label>
+                <input type="text" id="fahadMalikNameInput" placeholder="FAHAD MALIK" class="mb-4">
+                <label for="contactCardImgUrlInput" class="block text-gray-300 text-sm font-bold mb-2">Contact Card Image URL:</label>
+                <input type="text" id="contactCardImgUrlInput" placeholder="images/newprofile.jpg" class="mb-4">
+                <button id="saveProfileBtn" class="w-full">Save Profile & Images</button>
+                <p id="profileStatus" class="mt-2 text-sm"></p>
+            </div>
+
+            <!-- About Me Description -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-blue-300">About Me Description</h3>
+                <textarea id="aboutMeContent" class="mb-4 h-32"></textarea>
+                <button id="saveAboutMeBtn" class="w-full">Save About Me</button>
+                <p id="aboutMeStatus" class="mt-2 text-sm"></p>
+            </div>
+
+            <!-- About Me Details Section -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-blue-300">About Me Details</h3>
+                <div class="grid-col-2">
+                    <div>
+                        <label for="countryInput" class="block text-gray-300 text-sm font-bold mb-2">Country:</label>
+                        <input type="text" id="countryInput" placeholder="India" class="mb-4">
+                    </div>
+                    <div>
+                        <label for="ageInput" class="block text-gray-300 text-sm font-bold mb-2">Age:</label>
+                        <input type="number" id="ageInput" placeholder="16" class="mb-4">
+                    </div>
+                    <div>
+                        <label for="experienceInput" class="block text-gray-300 text-sm font-bold mb-2">Experience:</label>
+                        <input type="text" id="experienceInput" placeholder="5 Years" class="mb-4">
+                    </div>
+                    <div>
+                        <label for="schoolInput" class="block text-gray-300 text-sm font-bold mb-2">School:</label>
+                        <input type="text" id="schoolInput" placeholder="High School" class="mb-4">
+                    </div>
+                </div>
+                <button id="saveAboutMeDetailsBtn" class="w-full">Save Details</button>
+                <p id="aboutMeDetailsStatus" class="mt-2 text-sm"></p>
+            </div>
+
+            <!-- Changing Roles Section -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-blue-300">Changing Roles (Typewriter Effect)</h3>
+                <div id="rolesList" class="space-y-2 mb-4">
+                    <!-- Roles will be dynamically loaded here -->
+                </div>
+                <input type="text" id="newRoleTextInput" placeholder="Add new role text (e.g., Editor)" class="mb-2">
+                <input type="text" id="newRoleClassInput" placeholder="Add new role class (e.g., role-editor)" class="mb-4">
+                <button id="addRoleBtn" class="add-item-button w-full">Add New Role</button>
+                <p id="rolesStatus" class="mt-2 text-sm"></p>
+            </div>
+
+            <!-- Skills Section -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-blue-300">Skills</h3>
+                <div id="skillsList" class="space-y-2 mb-4">
+                    <!-- Skills will be dynamically loaded here -->
+                </div>
+                <input type="text" id="newSkillInput" placeholder="Add new skill (e.g., Video Editing)" class="mb-4">
+                <button id="addSkillBtn" class="add-item-button w-full">Add New Skill</button>
+                <p id="skillsStatus" class="mt-2 text-sm"></p>
+            </div>
+
+            <!-- Software Used Section -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-blue-300">Software Used</h3>
+                <div id="softwareList" class="space-y-2 mb-4">
+                    <!-- Software will be dynamically loaded here -->
+                </div>
+                <input type="text" id="newSoftwareInput" placeholder="Add new software (e.g., Adobe After Effects)" class="mb-4">
+                <button id="addSoftwareBtn" class="add-item-button w-full">Add New Software</button>
+                <p id="softwareStatus" class="mt-2 text-sm"></p>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-blue-300">Contact Details</h3>
+                <label for="contactEmailInput" class="block text-gray-300 text-sm font-bold mb-2">Email:</label>
+                <input type="email" id="contactEmailInput" placeholder="your_email@example.com" class="mb-4">
+                <label for="contactInstagramInput" class="block text-gray-300 text-sm font-bold mb-2">Instagram URL:</label>
+                <input type="text" id="contactInstagramInput" placeholder="https://www.instagram.com/your_instagram_id" class="mb-4">
+                <label for="contactYoutubeInput" class="block text-gray-300 text-sm font-bold mb-2">YouTube URL:</label>
+                <input type="text" id="contactYoutubeInput" placeholder="https://www.youtube.com/your_channel" class="mb-4">
+                <label for="contactTelegramInput" class="block text-gray-300 text-sm font-bold mb-2">Telegram URL:</label>
+                <input type="text" id="contactTelegramInput" placeholder="https://t.me/your_telegram_id" class="mb-4">
+                <button id="saveContactBtn" class="w-full">Save Contact Details</button>
+                <p id="contactStatus" class="mt-2 text-sm"></p>
+            </div>
+        </div>
+
+        <!-- Video Work Admin Section (Initially hidden) -->
+        <div id="videoWorkAdminSection" style="display: none;">
+            <h3 class="text-2xl font-semibold mb-4 text-blue-300">Short-Form Video Management</h3>
+            <div id="shortsVideosList" class="space-y-2 mb-4"></div>
+            <label for="newShortsUrl" class="block text-gray-300 text-sm font-bold mb-2">New Short-Form Video URL:</label>
+            <input type="text" id="newShortsUrl" placeholder="YouTube or Drive link" class="mb-2">
+            <label for="newShortsHeading" class="block text-gray-300 text-sm font-bold mb-2">New Short-Form Video Heading:</label>
+            <input type="text" id="newShortsHeading" placeholder="Quick Tip: Editing" class="mb-4">
+            <button id="addShortsBtn" class="add-item-button w-full">Add Short-Form Video</button>
+            <p id="shortsStatus" class="mt-2 text-sm"></p>
+
+            <h3 class="text-2xl font-semibold mb-4 mt-8 text-blue-300">Long-Form Video Management</h3>
+            <div id="longformVideosList" class="space-y-2 mb-4"></div>
+            <label for="newLongformUrl" class="block text-gray-300 text-sm font-bold mb-2">New Long-Form Video URL:</label>
+            <input type="text" id="newLongformUrl" placeholder="YouTube or Drive link" class="mb-2">
+            <label for="newLongformHeading" class="block text-gray-300 text-sm font-bold mb-2">New Long-Form Video Heading:</label>
+            <input type="text" id="newLongformHeading" placeholder="Cinematic Intro" class="mb-4">
+            <button id="addLongformBtn" class="add-item-button w-full">Add Long-Form Video</button>
+            <p id="longformStatus" class="mt-2 text-sm"></p>
+        </div>
+
+        <!-- Thumbnail Designs Admin Section (Initially hidden) -->
+        <div id="thumbnailDesignAdminSection" style="display: none;">
+            <h3 class="text-2xl font-semibold mb-4 text-blue-300">Thumbnail Design Management</h3>
+            <div id="thumbnailsList" class="space-y-2 mb-4"></div>
+            <label for="newThumbnailSrc" class="block text-gray-300 text-sm font-bold mb-2">New Thumbnail Image URL:</label>
+            <input type="text" id="newThumbnailSrc" placeholder="https://via.placeholder.com/1280x720" class="mb-2">
+            <label for="newThumbnailTitle" class="block text-gray-300 text-sm font-bold mb-2">New Thumbnail Title:</label>
+            <input type="text" id="newThumbnailTitle" placeholder="Awesome Thumbnail" class="mb-2">
+            <label for="newThumbnailDescription" class="block text-gray-300 text-sm font-bold mb-2">New Thumbnail Description:</label>
+            <textarea id="newThumbnailDescription" placeholder="A detailed description of this thumbnail." class="mb-4 h-24"></textarea>
+            <button id="addThumbnailBtn" class="add-item-button w-full">Add New Thumbnail</button>
+            <p id="thumbnailsStatus" class="mt-2 text-sm"></p>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDKs and Main Script -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove, collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration (using global __firebase_config for Canvas)
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            // Default config for local testing if __firebase_config is not available
+            apiKey: "AIzaSyC1m25mHpA59xBQmF34BfA1K_vY2pUSrLI",
+            authDomain: "fahad-portfolio-81c65.firebaseapp.com",
+            databaseURL: "https://fahad-portfolio-81c65-default-rtdb.firebaseio.com",
+            projectId: "fahad-portfolio-81c65",
+            storageBucket: "fahad-portfolio-81c65.firebasestorage.app",
+            messagingSenderId: "510625882446",
+            appId: "1:510625882446:web:b23f76808b3dd0e79a3e1f",
+            measurementId: "G-J5S5PLWE7J"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global variable for app ID, useful for Firestore paths
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // --- Utility Function: UUID Generator (for unique item IDs) ---
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // --- DOM Elements ---
+        // Auth elements
+        const authSection = document.getElementById('authSection');
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const authError = document.getElementById('authError');
+
+        // Admin Panel elements
+        const adminPanel = document.getElementById('adminPanel');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const dataMessage = document.getElementById('dataMessage');
+        const userCountDisplay = document.getElementById('userCountDisplay'); // New: User Count Display
+        const totalViewsDisplay = document.getElementById('totalViewsDisplay'); // New: Total Views Display
+
+        // Admin Navigation Buttons
+        const adminNavButtons = document.getElementById('adminNavButtons');
+        const navHomeContentBtn = document.getElementById('navHomeContentBtn');
+        const navVideoWorkBtn = document.getElementById('navVideoWorkBtn');
+        const navThumbnailDesignsBtn = document.getElementById('navThumbnailDesignsBtn');
+
+        // Admin Sections
+        const homeContentSection = document.getElementById('homeContentSection');
+        const videoWorkAdminSection = document.getElementById('videoWorkAdminSection');
+        const thumbnailDesignAdminSection = document.getElementById('thumbnailDesignAdminSection');
+
+        // Home Content Fields
+        const profilePicUrlInput = document.getElementById('profilePicUrlInput');
+        const fahadNameInput = document.getElementById('fahadNameInput');
+        const fahadMalikNameInput = document.getElementById('fahadMalikNameInput');
+        const contactCardImgUrlInput = document.getElementById('contactCardImgUrlInput');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const profileStatus = document.getElementById('profileStatus');
+
+        const aboutMeContentInput = document.getElementById('aboutMeContent');
+        const saveAboutMeBtn = document.getElementById('saveAboutMeBtn');
+        const aboutMeStatus = document.getElementById('aboutMeStatus');
+
+        const countryInput = document.getElementById('countryInput');
+        const ageInput = document.getElementById('ageInput');
+        const experienceInput = document.getElementById('experienceInput');
+        const schoolInput = document.getElementById('schoolInput');
+        const saveAboutMeDetailsBtn = document.getElementById('saveAboutMeDetailsBtn');
+        const aboutMeDetailsStatus = document.getElementById('aboutMeDetailsStatus');
+
+        const rolesList = document.getElementById('rolesList');
+        const newRoleTextInput = document.getElementById('newRoleTextInput');
+        const newRoleClassInput = document.getElementById('newRoleClassInput');
+        const addRoleBtn = document.getElementById('addRoleBtn');
+        const rolesStatus = document.getElementById('rolesStatus');
+
+        const skillsList = document.getElementById('skillsList');
+        const newSkillInput = document.getElementById('newSkillInput');
+        const addSkillBtn = document.getElementById('addSkillBtn');
+        const skillsStatus = document.getElementById('skillsStatus');
+
+        const softwareList = document.getElementById('softwareList');
+        const newSoftwareInput = document.getElementById('newSoftwareInput');
+        const addSoftwareBtn = document.getElementById('addSoftwareBtn');
+        const softwareStatus = document.getElementById('softwareStatus');
+
+        const contactEmailInput = document.getElementById('contactEmailInput');
+        const contactInstagramInput = document.getElementById('contactInstagramInput');
+        const contactYoutubeInput = document.getElementById('contactYoutubeInput');
+        const contactTelegramInput = document.getElementById('contactTelegramInput');
+        const saveContactBtn = document.getElementById('saveContactBtn');
+        const contactStatus = document.getElementById('contactStatus');
+
+        // Video Work Fields
+        const shortsVideosList = document.getElementById('shortsVideosList');
+        const newShortsUrlInput = document.getElementById('newShortsUrl');
+        const newShortsHeadingInput = document.getElementById('newShortsHeading');
+        const addShortsBtn = document.getElementById('addShortsBtn');
+        const shortsStatus = document.getElementById('shortsStatus');
+
+        const longformVideosList = document.getElementById('longformVideosList');
+        const newLongformUrlInput = document.getElementById('newLongformUrl');
+        const newLongformHeadingInput = document.getElementById('newLongformHeading');
+        const addLongformBtn = document.getElementById('addLongformBtn');
+        const longformStatus = document.getElementById('longformStatus');
+
+        // Thumbnail Design Fields
+        const thumbnailsList = document.getElementById('thumbnailsList');
+        const newThumbnailSrcInput = document.getElementById('newThumbnailSrc');
+        const newThumbnailTitleInput = document.getElementById('newThumbnailTitle');
+        const newThumbnailDescriptionInput = document.getElementById('newThumbnailDescription');
+        const addThumbnailBtn = document.getElementById('addThumbnailBtn');
+        const thumbnailsStatus = document.getElementById('thumbnailsStatus');
+
+
+        // --- Authentication Logic ---
+        async function signIn() {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            authError.textContent = '';
+            if (!email || !password) {
+                authError.textContent = "Email and Password cannot be empty.";
+                return;
+            }
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // Auth state observer will handle UI update
+            } catch (error) {
+                authError.textContent = `Login failed: ${error.message}`;
+                console.error("Login Error:", error);
+            }
+        }
+
+        // Add event listeners when DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            loginBtn.addEventListener('click', signIn);
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    signIn();
+                }
+            });
+
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    authSection.classList.remove('hidden'); // Show login screen on logout
+                    adminPanel.classList.add('hidden');
+                    dataMessage.textContent = ""; // Clear any data message
+                    console.log("User logged out.");
+                } catch (error) {
+                    console.error("Logout Error:", error);
+                }
+            });
+        });
+
+
+        // Use __initial_auth_token for Canvas environment login if available
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                authSection.classList.add('hidden'); // Hide login
+                adminPanel.classList.remove('hidden'); // Show admin panel
+                loadingIndicator.classList.remove('hidden');
+                dataMessage.classList.add('hidden');
+                console.log("Authenticated as:", user.uid);
+                await loadAdminData();
+                loadingIndicator.classList.add('hidden');
+                // Set default view to Home Content
+                showAdminSection('homeContent'); 
+            } else {
+                // If not authenticated, try to sign in with custom token (Canvas specific)
+                if (typeof __initial_auth_token !== 'undefined') {
+                    try {
+                        console.log("Attempting custom token sign-in...");
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (error) {
+                        console.error("Custom token sign-in failed. Please use manual login. Error:", error);
+                        authSection.classList.remove('hidden'); // Show login if auto-login fails
+                        adminPanel.classList.add('hidden');
+                        dataMessage.textContent = "Auto-login failed. Please sign in manually."; // Changed to dataMessage
+                        dataMessage.classList.remove('hidden');
+                    }
+                } else {
+                    // For non-Canvas environments or if auto-login fails, show login form
+                    authSection.classList.remove('hidden');
+                    adminPanel.classList.add('hidden');
+                    console.warn("Not in Canvas environment or auto-login failed. Showing manual login.");
+                }
+            }
+        });
+
+
+        // --- Firestore Data Management ---
+        const portfolioDataRef = doc(db, 'portfolio', appId); // Main document for all portfolio data
+        let currentPortfolioData = {}; // To store the latest data locally
+
+        function showStatus(element, message, isSuccess) {
+            element.textContent = message;
+            element.className = `mt-2 text-sm ${isSuccess ? 'text-green-500' : 'text-red-500'}`;
+            setTimeout(() => { element.textContent = ''; }, 3000);
+        }
+
+        async function loadAdminData() {
+            loadingIndicator.classList.remove('hidden');
+            dataMessage.classList.add('hidden');
+            try {
+                const docSnap = await getDoc(portfolioDataRef);
+                if (docSnap.exists()) {
+                    currentPortfolioData = docSnap.data(); // Store data locally
+                    // Populate fields directly from data
+                    populateAdminForms(currentPortfolioData);
+                } else {
+                    console.log("No portfolio data found. Attempting to create default data...");
+                    // Try to create default document. This is the FIRST write and needs permissions.
+                    await setDoc(portfolioDataRef, getDefaultPortfolioData()); // Use a function for default data
+                    console.log("Default data created successfully. Reloading admin data...");
+                    await loadAdminData(); // Reload after creating default data
+                }
+            } catch (error) {
+                console.error("Error loading admin data (initial fetch):", error);
+                dataMessage.textContent = `Failed to load portfolio data: ${error.message}. Ensure authenticated user has read permissions.`;
+                dataMessage.classList.remove('hidden');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        // Real-time listener for all portfolio data changes
+        onSnapshot(portfolioDataRef, (docSnap) => {
+            if (docSnap.exists()) {
+                currentPortfolioData = docSnap.data(); // Always update local copy
+                populateAdminForms(currentPortfolioData); // Update forms on real-time change
+                dataMessage.classList.add('hidden'); // Hide data message on successful update
+            } else {
+                console.log("Firestore document does not exist for real-time listener. Admin data cleared.");
+                dataMessage.textContent = "Portfolio data document does not exist. Please create default data or check Firestore.";
+                dataMessage.classList.remove('hidden');
+                // Clear all forms if document is deleted
+                populateAdminForms({}); 
+            }
+        }, (error) => {
+            console.error("Error listening to data changes:", error);
+            dataMessage.textContent = `Real-time data updates failed: ${error.message}.`;
+            dataMessage.classList.remove('hidden');
+        });
+
+        function populateAdminForms(data) {
+            // Profile & Name
+            profilePicUrlInput.value = data.profile?.profilePicUrl || '';
+            fahadNameInput.value = data.profile?.fahadName || '';
+            fahadMalikNameInput.value = data.profile?.fahadMalikName || '';
+            contactCardImgUrlInput.value = data.profile?.contactCardImgUrl || '';
+
+            // About Me Description
+            aboutMeContentInput.value = data.aboutMe || '';
+
+            // About Me Details
+            countryInput.value = data.aboutMeDetails?.country || '';
+            ageInput.value = data.aboutMeDetails?.age || '';
+            experienceInput.value = data.aboutMeDetails?.experience || '';
+            schoolInput.value = data.aboutMeDetails?.school || '';
+
+            // Render lists
+            renderListItem(rolesList, data.roles || [], 'roles');
+            renderListItem(skillsList, data.skills || [], 'skills');
+            renderListItem(softwareList, data.software || [], 'software');
+            renderListItem(shortsVideosList, data.videos?.shorts || [], 'videos.shorts');
+            renderListItem(longformVideosList, data.videos?.longform || [], 'videos.longform');
+            renderListItem(thumbnailsList, data.thumbnails || [], 'thumbnails');
+
+            // Contact
+            contactEmailInput.value = data.contact?.email || '';
+            contactInstagramInput.value = data.contact?.instagram || '';
+            contactYoutubeInput.value = data.contact?.youtube || '';
+            contactTelegramInput.value = data.contact?.telegram || '';
+        }
+
+        function getDefaultPortfolioData() {
+            return {
+                profile: {
+                    profilePicUrl: "https://placehold.co/150x150/00FFFF/0a0f1b?text=Profile", // Default placeholder
+                    fahadName: "FAHAD",
+                    fahadMalikName: "FAHAD MALIK",
+                    contactCardImgUrl: "https://placehold.co/150x150/00FFFF/0a0f1b?text=Contact" // Default placeholder
+                },
+                aboutMe: "Hi! I'm Fahad — a creative Video Editor, VFX Artist, and Designer with 5 years of experience...",
+                aboutMeDetails: {
+                    country: "India",
+                    age: 16,
+                    experience: "5 Years",
+                    school: "High School"
+                },
+                roles: [
+                    { id: generateUUID(), text: "Editor", className: "role-editor" },
+                    { id: generateUUID(), text: "VFX & CGI Artist", className: "role-vfx-artist" },
+                    { id: generateUUID(), text: "Thumbnail Designer", className: "role-thumbnail-designer" },
+                    { id: generateUUID(), text: "Youtuber", className: "role-youtuber" }
+                ],
+                skills: [
+                    "Video Editing (Reels, Shorts, Cinematic)",
+                    "VFX & CGI Effects",
+                    "Thumbnail & Poster Design",
+                    "Social Media Content & Branding"
+                ],
+                software: [
+                    "Adobe After Effects",
+                    "Premiere Pro",
+                    "Photoshop",
+                    "Blender"
+                ],
+                contact: {
+                    email: "your_email@example.com",
+                    instagram: "https://www.instagram.com/your_instagram_id",
+                    youtube: "https://www.youtube.com/watch?v=VIDEO_ID", // Example YouTube URL (raw)
+                    telegram: "https://t.me/hadoxfahad"
+                },
+                videos: {
+                    shorts: [
+                        { id: generateUUID(), url: "https://www.youtube.com/watch?v=kR6A15jH0yY", heading: "Quick Tip: Editing" },
+                        { id: generateUUID(), url: "https://www.youtube.com/watch?v=M7FIvfx5J10", heading: "Behind the Scenes: VFX" }
+                    ],
+                    longform: [
+                        { id: generateUUID(), url: "https://www.youtube.com/watch?v=LXb3EKWsInQ", heading: "Sample Longform" },
+                        { id: generateUUID(), url: "https://www.youtube.com/watch?v=JmH0v9B0j9g", heading: "Another Longform" }
+                    ]
+                },
+                thumbnails: [
+                    { id: generateUUID(), src: "https://placehold.co/1280x720/00FFFF/0a0f1b?text=Thumb+1", title: "First Design", description: "This is a detailed description for my first thumbnail design." },
+                    { id: generateUUID(), src: "https://placehold.co/1280x720/00FFFF/0a0f1b?text=Thumb+2", title: "Second Design", description: "Another creative thumbnail placeholder." }
+                ]
+            };
+        }
+
+        // Helper function to render and manage dynamic lists with edit/delete
+        // This function now correctly handles rendering of edit/delete buttons for complex objects
+        function renderListItem(container, items, fieldPath) {
+            container.innerHTML = '';
+            items.forEach((item) => {
+                // Ensure item has an ID. If it's a simple string, treat the string as its ID/value.
+                const itemId = item.id || item; 
+                
+                const div = document.createElement('div');
+                div.classList.add('list-item');
+
+                let itemHtmlContent = '';
+                if (fieldPath === 'roles') {
+                    itemHtmlContent = `
+                        <div class="flex-grow">
+                            <input type="text" value="${item.text || ''}" data-field="text" class="mb-1 bg-gray-800 text-sm" />
+                            <input type="text" value="${item.className || ''}" data-field="className" class="bg-gray-800 text-sm" />
+                        </div>
+                    `;
+                } else if (fieldPath.startsWith('videos')) {
+                    itemHtmlContent = `
+                        <div class="flex-grow">
+                            <input type="text" value="${item.url || ''}" data-field="url" class="mb-1 bg-gray-800 text-sm" placeholder="YouTube or Drive link" />
+                            <input type="text" value="${item.heading || ''}" data-field="heading" class="bg-gray-800 text-sm" placeholder="Video Heading" />
+                        </div>
+                    `;
+                } else if (fieldPath === 'thumbnails') {
+                    itemHtmlContent = `
+                        <div class="flex-grow">
+                            <img src="${item.src || 'https://placehold.co/100x56'}" class="w-24 h-auto rounded-md mb-2 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/100x56/555555/FFFFFF?text=X';" />
+                            <input type="text" value="${item.src || ''}" data-field="src" class="mb-1 bg-gray-800 text-sm" placeholder="Image URL" />
+                            <input type="text" value="${item.title || ''}" data-field="title" class="mb-1 bg-gray-800 text-sm" placeholder="Thumbnail Title" />
+                            <textarea data-field="description" class="bg-gray-800 h-16 text-sm" placeholder="Description">${item.description || ''}</textarea>
+                        </div>
+                    `;
+                } else { // For simple string arrays like skills, software
+                    itemHtmlContent = `<div class="flex-grow"><input type="text" value="${item || ''}" data-field="text" class="bg-gray-800 text-sm" /></div>`;
+                }
+                
+                div.innerHTML = `
+                    ${itemHtmlContent}
+                    <div class="list-item-controls">
+                        <button class="save-btn">Save</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                `;
+
+                // Set ID on the list-item div itself for easy lookup
+                div.setAttribute('data-id', itemId);
+
+                // Add event listeners for Delete
+                div.querySelector('.delete-btn').addEventListener('click', async () => {
+                    const currentArray = getNestedValue(currentPortfolioData, fieldPath) || [];
+                    // Filter out the item by its ID (if object) or direct value (if string)
+                    const updatedArray = currentArray.filter(i => (i.id || i) !== itemId); 
+                    
+                    const updateObject = {};
+                    setNestedValue(updateObject, fieldPath, updatedArray);
+
+                    try {
+                        await updateDoc(portfolioDataRef, updateObject);
+                        showStatus(document.getElementById(`${fieldPath.split('.').pop()}Status`), 'Item deleted successfully!', true);
+                    } catch (error) {
+                        console.error("Error deleting item:", error);
+                        showStatus(document.getElementById(`${fieldPath.split('.').pop()}Status`), `Error deleting item: ${error.message}`, false);
+                    }
+                });
+
+                // Add event listeners for Save
+                div.querySelector('.save-btn').addEventListener('click', async () => {
+                    const currentArray = getNestedValue(currentPortfolioData, fieldPath) || [];
+                    let updatedItem;
+
+                    if (fieldPath === 'roles') {
+                        updatedItem = { id: itemId, text: div.querySelector('input[data-field="text"]').value, className: div.querySelector('input[data-field="className"]').value };
+                    } else if (fieldPath.startsWith('videos')) {
+                        updatedItem = { id: itemId, url: div.querySelector('input[data-field="url"]').value, heading: div.querySelector('input[data-field="heading"]').value };
+                    } else if (fieldPath === 'thumbnails') {
+                        updatedItem = { id: itemId, src: div.querySelector('input[data-field="src"]').value, title: div.querySelector('input[data-field="title"]').value, description: div.querySelector('textarea[data-field="description"]').value };
+                    } else { // For simple string arrays
+                        updatedItem = div.querySelector('input[data-field="text"]').value;
+                    }
+
+                    // Find index of old item by ID (or value for simple arrays)
+                    const itemIndex = currentArray.findIndex(i => (i.id || i) === itemId);
+
+                    let newArray = [...currentArray];
+                    if (itemIndex > -1) {
+                        newArray[itemIndex] = updatedItem; // Replace existing item
+                    } else {
+                        // This case should ideally not happen for "save", but as a fallback
+                        console.warn("Item not found for update, adding as new. This might indicate a data inconsistency.");
+                        newArray.push(updatedItem);
+                    }
+                    
+                    const updateObject = {};
+                    setNestedValue(updateObject, fieldPath, newArray);
+
+                    try {
+                        await updateDoc(portfolioDataRef, updateObject);
+                        showStatus(document.getElementById(`${fieldPath.split('.').pop()}Status`), 'Item updated successfully!', true);
+                    } catch (error) {
+                        console.error("Error updating item:", error);
+                        showStatus(document.getElementById(`${fieldPath.split('.').pop()}Status`), `Error updating item: ${error.message}`, false);
+                    }
+                });
+
+                container.appendChild(div);
+            });
+        }
+
+        // Helper function to get nested value from an object using a path string (e.g., 'videos.shorts')
+        function getNestedValue(obj, path) {
+            return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+        }
+
+        // Helper function to set nested value in an object using a path string
+        function setNestedValue(obj, path, value) {
+            const pathParts = path.split('.');
+            let current = obj;
+            for (let i = 0; i < pathParts.length - 1; i++) {
+                const part = pathParts[i];
+                if (!current[part] || typeof current[part] !== 'object' || Array.isArray(current[part])) {
+                    current[part] = {}; // Ensure it's an object if an intermediate part is missing or not an object
+                }
+                current = current[part];
+            }
+            current[pathParts[pathParts.length - 1]] = value;
+        }
+
+
+        // --- Save Buttons Logic (for single fields) ---
+        async function saveHandler(operationPromise, statusElement, successMessage, errorMessagePrefix) {
+            try {
+                await operationPromise;
+                showStatus(statusElement, successMessage, true);
+            } catch (error) {
+                console.error(`${errorMessagePrefix}:`, error);
+                showStatus(statusElement, `${errorMessagePrefix}: ${error.message}`, false);
+            }
+        }
+
+        saveProfileBtn.addEventListener('click', () => {
+            const profileData = {
+                profilePicUrl: profilePicUrlInput.value,
+                fahadName: fahadNameInput.value,
+                fahadMalikName: fahadMalikNameInput.value,
+                contactCardImgUrl: contactCardImgUrlInput.value
+            };
+            saveHandler(
+                updateDoc(portfolioDataRef, { profile: profileData }),
+                profileStatus,
+                'Profile details updated successfully!',
+                'Error updating profile'
+            );
+        });
+
+        saveAboutMeBtn.addEventListener('click', () => {
+            const content = aboutMeContentInput.value;
+            saveHandler(
+                updateDoc(portfolioDataRef, { aboutMe: content }),
+                aboutMeStatus,
+                'About Me description updated successfully!',
+                'Error updating About Me description'
+            );
+        });
+
+        saveAboutMeDetailsBtn.addEventListener('click', () => {
+            const detailsData = {
+                country: countryInput.value,
+                age: parseInt(ageInput.value),
+                experience: experienceInput.value,
+                school: schoolInput.value
+            };
+            if (isNaN(detailsData.age)) {
+                showStatus(aboutMeDetailsStatus, 'Age must be a number.', false);
+                return;
+            }
+            saveHandler(
+                updateDoc(portfolioDataRef, { aboutMeDetails: detailsData }),
+                aboutMeDetailsStatus,
+                'About Me details updated successfully!',
+                'Error updating About Me details'
+            );
+        });
+
+        addRoleBtn.addEventListener('click', () => {
+            const roleText = newRoleTextInput.value.trim();
+            const roleClass = newRoleClassInput.value.trim();
+            if (roleText && roleClass) {
+                saveHandler(
+                    updateDoc(portfolioDataRef, { roles: arrayUnion({ id: generateUUID(), text: roleText, className: roleClass }) }),
+                    rolesStatus,
+                    'Role added successfully!',
+                    'Error adding role'
+                );
+                newRoleTextInput.value = '';
+                newRoleClassInput.value = '';
+            } else {
+                showStatus(rolesStatus, 'Both role text and class are required.', false);
+            }
+        });
+
+        addSkillBtn.addEventListener('click', () => {
+            const skill = newSkillInput.value.trim();
+            if (skill) {
+                saveHandler(
+                    updateDoc(portfolioDataRef, { skills: arrayUnion(skill) }),
+                    skillsStatus,
+                    'Skill added successfully!',
+                    'Error adding skill'
+                );
+                newSkillInput.value = '';
+            } else {
+                showStatus(skillsStatus, 'Skill cannot be empty.', false);
+            }
+        });
+
+        addSoftwareBtn.addEventListener('click', () => {
+            const software = newSoftwareInput.value.trim();
+            if (software) {
+                saveHandler(
+                    updateDoc(portfolioDataRef, { software: arrayUnion(software) }),
+                    softwareStatus,
+                    'Software added successfully!',
+                    'Error adding software'
+                );
+                newSoftwareInput.value = '';
+            } else {
+                showStatus(softwareStatus, 'Software cannot be empty.', false);
+            }
+        });
+
+        saveContactBtn.addEventListener('click', () => {
+            const contactData = {
+                email: contactEmailInput.value,
+                instagram: contactInstagramInput.value,
+                youtube: contactYoutubeInput.value,
+                telegram: contactTelegramInput.value
+            };
+            saveHandler(
+                updateDoc(portfolioDataRef, { contact: contactData }),
+                contactStatus,
+                'Contact details updated successfully!',
+                'Error updating contact'
+            );
+        });
+
+        // --- Video Work & Thumbnail Add Buttons ---
+        addShortsBtn.addEventListener('click', () => {
+            const url = newShortsUrlInput.value.trim();
+            const heading = newShortsHeadingInput.value.trim();
+            if (url && heading) {
+                saveHandler(
+                    updateDoc(portfolioDataRef, { "videos.shorts": arrayUnion({ id: generateUUID(), url: url, heading: heading }) }),
+                    shortsStatus,
+                    'Short-form video added successfully!',
+                    'Error adding short-form video'
+                );
+                newShortsUrlInput.value = '';
+                newShortsHeadingInput.value = '';
+            } else {
+                showStatus(shortsStatus, 'URL and Heading are required.', false);
+            }
+        });
+
+        addLongformBtn.addEventListener('click', () => {
+            const url = newLongformUrlInput.value.trim();
+            const heading = newLongformHeadingInput.value.trim();
+            if (url && heading) {
+                saveHandler(
+                    updateDoc(portfolioDataRef, { "videos.longform": arrayUnion({ id: generateUUID(), url: url, heading: heading }) }),
+                    longformStatus,
+                    'Long-form video added successfully!',
+                    'Error adding long-form video'
+                );
+                newLongformUrlInput.value = '';
+                newLongformHeadingInput.value = '';
+            } else {
+                showStatus(longformStatus, 'URL and Heading are required.', false);
+            }
+        });
+
+        addThumbnailBtn.addEventListener('click', () => {
+            const src = newThumbnailSrcInput.value.trim();
+            const title = newThumbnailTitleInput.value.trim();
+            const description = newThumbnailDescriptionInput.value.trim();
+            if (src && title && description) {
+                saveHandler(
+                    updateDoc(portfolioDataRef, { thumbnails: arrayUnion({ id: generateUUID(), src: src, title: title, description: description }) }),
+                    thumbnailsStatus,
+                    'Thumbnail added successfully!',
+                    'Error adding thumbnail'
+                );
+                newThumbnailSrcInput.value = '';
+                newThumbnailTitleInput.value = '';
+                newThumbnailDescriptionInput.value = '';
+            } else {
+                showStatus(thumbnailsStatus, 'All fields are required.', false);
+            }
+        });
+
+        // --- Admin Section Switching Logic ---
+        function showAdminSection(sectionName) {
+            // Hide all sections first
+            homeContentSection.style.display = 'none';
+            videoWorkAdminSection.style.display = 'none';
+            thumbnailDesignAdminSection.style.display = 'none';
+
+            // Deactivate all nav buttons
+            navHomeContentBtn.classList.remove('active');
+            navVideoWorkBtn.classList.remove('active');
+            navThumbnailDesignsBtn.classList.remove('active');
+
+            // Show target section and activate its button
+            if (sectionName === 'homeContent') {
+                homeContentSection.style.display = 'block';
+                navHomeContentBtn.classList.add('active');
+            } else if (sectionName === 'videoWork') {
+                videoWorkAdminSection.style.display = 'block';
+                navVideoWorkBtn.classList.add('active');
+            } else if (sectionName === 'thumbnailDesigns') {
+                thumbnailDesignAdminSection.style.display = 'block';
+                navThumbnailDesignsBtn.classList.add('active');
+            }
+        }
+
+        navHomeContentBtn.addEventListener('click', () => showAdminSection('homeContent'));
+        navVideoWorkBtn.addEventListener('click', () => showAdminSection('videoWork'));
+        navThumbnailDesignsBtn.addEventListener('click', () => showAdminSection('thumbnailDesigns'));
+        
+        // Initial setup on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial section is shown based on auth state, then default to Home Content
+        });
+
+        // --- Real-time User Count (for admin panel) ---
+        const activeUsersCollectionRef = collection(db, 'activeUsers'); // Collection for tracking active users
+        const pageViewsDocRef = doc(db, 'pageViews', appId); // Document for total page views
+
+        // Listen to active users changes
+        onSnapshot(activeUsersCollectionRef, (snapshot) => {
+            userCountDisplay.textContent = `Live Users: ${snapshot.size}`;
+        }, (error) => {
+            console.error("Error getting live user count:", error);
+            userCountDisplay.textContent = `Live Users: Error (${error.message})`;
+        });
+
+        // Listen to total page views changes
+        onSnapshot(pageViewsDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+                totalViewsDisplay.textContent = `Total Visits: ${docSnap.data().count || 0}`;
+            } else {
+                totalViewsDisplay.textContent = `Total Visits: 0`;
+            }
+        }, (error) => {
+            console.error("Error getting total views:", error);
+            totalViewsDisplay.textContent = `Total Visits: Error (${error.message})`;
+        });
+    </script>
+</body>
+</html>
